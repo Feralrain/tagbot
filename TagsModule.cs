@@ -3,96 +3,98 @@
 using System;
 using System.Net;
 using System.Text;
+
 using System.Threading;
+using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
+using DSharpPlus.SlashCommands;
+
 using Newtonsoft.Json.Linq;
 
 namespace TagBot.Commands {
-    public class TagsModule {
-        
-        //TODO: switch over to CommandsNext
-        public static async void RecieveTag(MessageCreateEventArgs e) {
-            var tag = e.Message.Content.Split(" ")[0].Substring(1).ToLower();
-            var query = e.Message.Content.Substring(tag.Length + 2, e.Message.Content.Length - tag.Length - 2);
+    public class TagsModule : ApplicationCommandModule {
 
-            DiscordEmbedBuilder embed;
 
-            if (tag == "gif")                                   embed = GifTag          (query);
-            else if (tag == "image"        || tag == "img")     embed = ImageTag        (query);
-            else if (tag == "youtube"      || tag == "yt")      embed = YoutubeTag      (query);
-            else if (tag == "wikipedia"    || tag == "wiki")    embed = WikipediaTag    (query);
-            else if (tag == "wolframalpha" || tag == "wolfram") embed = WolframalphaTag (query);
-            else if (tag == "imdb"         || tag == "omdb")    embed = ImdbTag         (query);
-            else if (tag == "lmgtfy")                           embed = LmgtfyTag       (query);
-            else if (tag == "magic"        || tag == "mtg")     embed = MagicTag        (query);
-            else if (tag == "hearthstone"  || tag == "hearth")  embed = HearthstoneTag  (query);
-            else if (tag == "league"       || tag == "lol")     embed = LeagueTag       (query);
-            else if (tag == "urban"        || tag == "ud")      embed = UrbanTag        (query);
-            else if (tag == "define"       || tag == "def")     embed = DefineTag       (query);
-            else if (tag == "reverseimage" || tag == "reverse") embed = ReverseimageTag (query);
-            else if (tag == "steam")                            embed = SteamTag        (query);
-            else if (tag == "anime"        || tag == "mal")     embed = AnimeTag        (query);
-            else if (tag == "crypto")                           embed = CryptoTag       (query);
-            else if (tag == "pokemon"      || tag == "mon")     embed = PokemonTag      (query);
-            else if (tag == "xkcd")                             embed = XkcdTag         (query);
-            else if (tag == "lyrics")                           embed = LyricsTag       (query);
-            else if (tag == "stocks"       || tag == "stock")   embed = StocksTag       (query);
-            else if (tag == "yugioh")                           embed = YugiohTag       (query);
-            else if (tag == "supersmash"   || tag == "smash")   embed = SupersmashTag   (query);
-            else if (tag == "countrystats" || tag == "country") embed = CountrystatsTag (query);
-            else if (tag == "github"       || tag == "gh")      embed = GithubTag       (query);
-            else if (tag == "timezone"     || tag == "time")    embed = TimezoneTag     (query);
-            else if (tag == "minecraft"    || tag == "mc")      embed = MinecraftTag    (query);
-            else if (tag == "eightball"    || tag == "8ball")   embed = EightballTag    (query);
+        [SlashCommand("gif", "search for a gif")]
+        public async Task GifTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
 
-            else return;
-            try { await e.Message.RespondAsync(embed).ConfigureAwait(false); } catch {}
-        }
-
-        public static DiscordEmbedBuilder GifTag(string query) {
             using (WebClient client = new WebClient()) {
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"https://g.tenor.com/v1/search?q={query}&key=LIVDSRZULELA&limit=15")); } catch { json = null; }
 
-                return new DiscordEmbedBuilder()
+                var embed = new DiscordEmbedBuilder()
                     .WithTitle(query)
                     .WithImageUrl(Convert.ToString(json["results"][Config.random.Next(15)]["media"][0]["gif"]["url"]))
                     .WithColor(new DiscordColor(Config.COLORLESS))
-                    .WithFooter(Config.FOOTER + " | Powered by Tenor");
-            }
+                    .WithFooter(Config.FOOTER + " | Powered by Tenor")
+                    .Build();
+
+                response.AddEmbed(embed);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder ImageTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("image", "search for an image")]
+        public async Task ImageTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder YoutubeTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("youtube", "search for a youtube video")]
+        public async Task YoutubeTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false);   
         }
 
-        public static DiscordEmbedBuilder WikipediaTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("wikipedia", "search for a wikipedia article")]
+        public async Task WikipediaTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder WolframalphaTag(string query) {
-            return new DiscordEmbedBuilder()
-                .WithTitle(Config.UNIMPLEMENTED_ERROR)
-                .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+        [SlashCommand("gif", "get an AI answer from Wolfram alpha")]
+        public async Task WolframAlphaTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+
+            using (WebClient client = new WebClient()) {
+                var embed = new DiscordEmbedBuilder()
+                    .WithTitle(Config.UNIMPLEMENTED_ERROR)
+                    .WithColor(new DiscordColor(Config.RED_COLOR))
+                    .WithFooter(Config.FOOTER)
+                    .Build();
+
+                response.AddEmbed(embed);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder ImdbTag(string query) {
+        [SlashCommand("imdb", "search for a movie or show")]
+        public async Task ImdbTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+
             using (WebClient client = new WebClient()) {                
                 // ?s parameter is broken when using query variable. pagination is unsupported until fixed.
 
@@ -128,41 +130,68 @@ namespace TagBot.Commands {
                 try { builder.AddField("Starring",  Convert.ToString(json["Actors"]), false); } catch {}
                 try { builder.AddField("Genres",    Convert.ToString(json["Genre"]),  false); } catch {}
 
-                return builder;
-            }
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder LmgtfyTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("lmgtfy", "show someone how to Google something")]
+        public async Task LmgtfyTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(query)
                 .WithUrl($"https://www.lmgtfy.app/?q={query.Replace(" ", "%20")}")
                 .WithDescription("This service is not intended to empower arrogant assholes who believe they are better than you. Google is one of the most powerful tools available to us today, and this tool is designed solely to help remind you of when it can be helpful.")
-                .WithColor(new DiscordColor(Config.COLORLESS))
-                .WithFooter(Config.FOOTER + " | Powered by LMGTFY");
+                .WithColor(new DiscordColor(Config.COLORLESS));
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder MagicTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("mtg", "search for a Magic: The Gathering card")]
+        public async Task MtgTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder HearthstoneTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("hearthstone", "find a Hearthstone card")]
+        public async Task HerthstoneTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder LeagueTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("lol", "find a League of Legends champion")]
+        public async Task LolTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder UrbanTag(string query) {
+        [SlashCommand("urban", "search for a word on Urban Dictionary")]
+        public async Task UrbanTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder();
+
             using (var client = new WebClient()) {
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"http://api.urbandictionary.com/v0/define?term={query}"))["list"][0]; } catch { json = null; }
@@ -181,33 +210,70 @@ namespace TagBot.Commands {
                 try { builder.AddField("Votes", $"👍 {Convert.ToString(json["thumbs_up"])} | 👎 {Convert.ToString(json["thumbs_down"])}", true); } catch {}
 
                 try { builder.AddField("Example", Convert.ToString(json["example"]), false); } catch {}
-                return builder;
+                embed = builder;
             }
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder DefineTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("define", "find a definition for a word")]
+        public async Task DefineTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder ReverseimageTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("reverseimage", "perform a reverse image search")]
+        public async Task ReverseimageTag(InteractionContext ctx, [Option("query", "attach an image")] DiscordMessageFile query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder SteamTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("steamgame", "find a steam game")]
+        public async Task SteamgameTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder AnimeTag(string query) {
-            using (var client = new WebClient()) {
+        [SlashCommand("steamuser", "find a steam user")]
+        public async Task SteamuserTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle(Config.UNIMPLEMENTED_ERROR)
+                .WithColor(new DiscordColor(Config.RED_COLOR))
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+        }
+
+        [SlashCommand("anime", "search for information on an anime show")]
+        public async Task AnimeTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+
+            using (WebClient client = new WebClient()) {                
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"https://kitsu.io/api/edge/anime?filter[text]={query}"))["data"][0]["attributes"]; } catch { json = null; }
 
@@ -224,17 +290,21 @@ namespace TagBot.Commands {
                 try { builder.AddField("Episodes",   Convert.ToString(json["episodeCount"]),  true); }                                              catch {}
                 try { builder.AddField("Rating", $" {Convert.ToString(json["ageRating"])} | ({Convert.ToString(json["ageRatingGuide"])})", true); } catch {}
 
-                return builder;
-            }
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder CryptoTag(string query) {
-            using (var client = new WebClient()) {
+        [SlashCommand("crypto", "search for information on a cryptocurrency coin")]
+        public async Task CryptoTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+
+            using (WebClient client = new WebClient()) {                
                 JToken metrics;
                 JToken profile;
 
-                try { metrics = JObject.Parse(client.DownloadString($"https://data.messari.io/api/v1/assets/{query}/metrics"))["data"]; } catch { return null; }
-                try { profile = JObject.Parse(client.DownloadString($"https://data.messari.io/api/v1/assets/{query}/profile"))["data"]; } catch { return null; }
+                try { metrics = JObject.Parse(client.DownloadString($"https://data.messari.io/api/v1/assets/{query}/metrics"))["data"]; } catch { return; }
+                try { profile = JObject.Parse(client.DownloadString($"https://data.messari.io/api/v1/assets/{query}/profile"))["data"]; } catch { return; }
 
                 var builder = new DiscordEmbedBuilder()
                     .WithFooter(Config.FOOTER + " | Powered by Messari")
@@ -254,12 +324,16 @@ namespace TagBot.Commands {
                 try { builder.AddField("Inflation",    Convert.ToString(metrics["supply"]["annual_inflation_percent"]) + "%",        true); } catch {}
                 try { builder.AddField("Hashrate",     Convert.ToString(metrics["on_chain_data"]["hash_rate"]) + "%",                true); } catch {}
 
-                return builder;
-            }
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder PokemonTag(string query) {
-            using (var client = new WebClient()) {
+        [SlashCommand("pokemon", "search for information on a Pokemon")]
+        public async Task PokemonTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+
+            using (WebClient client = new WebClient()) {                
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"https://some-random-api.ml/pokedex?pokemon={query}")); } catch { json = null; }
 
@@ -304,11 +378,14 @@ namespace TagBot.Commands {
                 try { builder.AddField("Egg Groups", groups     .Remove(groups     .Length - 2, 2), false); } catch {}
                 try { builder.AddField("Evolutions", evolutions .Remove(evolutions .Length - 2, 2), false); } catch {}
 
-                return builder;
-            }
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+            }  
         }
 
-        public static DiscordEmbedBuilder XkcdTag(string query) {
+        [SlashCommand("xkcd", "find an XKCD panel by number")]
+        public async Task XkcdTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
             using (var client = new WebClient()) {
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"https://xkcd.com/{query}/info.0.json")); } catch { json = null; }
@@ -322,11 +399,14 @@ namespace TagBot.Commands {
                 try { builder.WithDescription (Convert.ToString(json["alt"])); } catch {}
                 try { builder.WithImageUrl    (Convert.ToString(json["img"])); } catch {}
 
-                return builder;
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false);
             }
         }
 
-        public static DiscordEmbedBuilder LyricsTag(string query) {
+        [SlashCommand("lyrics", "find lyrics for a given song")]
+        public async Task LyricsTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
             using (var client = new WebClient()) {
                 JToken json;
                 try { json = JObject.Parse(client.DownloadString($"https://some-random-api.ml/lyrics?title={query}")); } catch { json = null; }
@@ -342,50 +422,79 @@ namespace TagBot.Commands {
 
                 try { builder.WithUrl         (Convert.ToString(json["links"]["genius"])); }     catch {}
                 try { builder.WithImageUrl    (Convert.ToString(json["thumbnail"]["genius"])); } catch {}
-                
-                return builder;
+
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false);
             }
         }
 
-        public static DiscordEmbedBuilder StocksTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("stocks", "find info on a stock symbol")]
+        public async Task StocksTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
-        }
-
-        public static DiscordEmbedBuilder YugiohTag(string query) {
-            return new DiscordEmbedBuilder()
-                .WithTitle(Config.UNIMPLEMENTED_ERROR)
-                .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
-        }
-
-        public static DiscordEmbedBuilder SupersmashTag(string query) {
-            return new DiscordEmbedBuilder()
-                .WithTitle(Config.UNIMPLEMENTED_ERROR)
-                .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
-        }
-
-        public static DiscordEmbedBuilder CountrystatsTag(string query) {
-            return new DiscordEmbedBuilder()
-                .WithTitle(Config.UNIMPLEMENTED_ERROR)
-                .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
-        }
-
-        public static DiscordEmbedBuilder GithubTag(string query) {
-            var builder = new DiscordEmbedBuilder()
                 .WithFooter(Config.FOOTER)
-                .WithColor(new DiscordColor(Config.COLORLESS));
+                .Build();
 
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+        }
+
+        [SlashCommand("yugioh", "find a Yugioh card")]
+        public async Task YugiohTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle(Config.UNIMPLEMENTED_ERROR)
+                .WithColor(new DiscordColor(Config.RED_COLOR))
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+        }
+
+        [SlashCommand("smash", "get stats for a Super Smash Bros: Ultimate character")]
+        public async Task SmashTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle(Config.UNIMPLEMENTED_ERROR)
+                .WithColor(new DiscordColor(Config.RED_COLOR))
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+        }
+
+        [SlashCommand("country", "find statistics on a country")]
+        public async Task CountryTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
+                .WithTitle(Config.UNIMPLEMENTED_ERROR)
+                .WithColor(new DiscordColor(Config.RED_COLOR))
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
+        }
+
+
+        [SlashCommand("github", "find lyrics for a given song")]
+        public async Task GithubTag(InteractionContext ctx, [Option("type", "Type `user` if you are looking for a user, `org` if you are looking for an organization, or `repo` to find a repository.")] string type, [Option("query", "What is the name of your search?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
             using (var client = new WebClient()) {
                 client.Headers.Add(HttpRequestHeader.UserAgent, "@CowsauceDev");
                 client.Headers.Add(HttpRequestHeader.Authorization, "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(Config.KEYS["github"])));
+
                 JToken json;
 
-                if (query.Split(" ")[0] == "user") {
+                var builder = new DiscordEmbedBuilder()
+                    .WithFooter(Config.FOOTER)
+                    .WithColor(new DiscordColor(Config.COLORLESS));
+
+                if (type == "user") {
                     builder.WithDescription(query.Split(" ")[1]);
                     json = JObject.Parse(client.DownloadString($"https://api.github.com/users/{query.Split(" ")[1]}"));
 
@@ -412,7 +521,7 @@ namespace TagBot.Commands {
                     try { builder.AddField("Website",  $"**[{Convert.ToString(json["blog"])}]({Convert.ToString(json["blog"])})**", false); } catch {}
                 }
 
-                else if (query.Split(" ")[0] == "org") {
+                else if (type == "org") {
                     try { json = JObject.Parse(client.DownloadString($"https://api.github.com/orgs/{query.Split(" ")[1]}")); } catch { json = null; }
 
                     try { builder.WithTitle    ($"{Convert.ToString(json["login"])} (ID:{Convert.ToString(json["id"])})"); } catch {}
@@ -437,7 +546,7 @@ namespace TagBot.Commands {
                     try { builder.AddField("Website", $"**[{Convert.ToString(json["blog"])}]({Convert.ToString(json["blog"])})**", false); } catch {}
                 }
 
-                else if (query.Split(" ")[0] == "repo") {
+                else if (type == "repo") {
                     builder.WithDescription(query.Split(" ")[1]);
                     try { json = JObject.Parse(client.DownloadString($"https://api.github.com/repos/{query.Split(" ")[1]}")); } catch { json = null; }
 
@@ -458,33 +567,52 @@ namespace TagBot.Commands {
                     try { builder.AddField("Website",       $"**[{Convert.ToString(json["homepage"])}]({Convert.ToString(json["homepage"])})**", false); } catch {}
                     try { builder.AddField("Main Language", Convert.ToString(json["language"]), false); } catch {}
                 }
-                
-                return builder;
+
+                response.AddEmbed(builder);
+                await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false);
             }
         }
 
-        public static DiscordEmbedBuilder TimezoneTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("timenow", "get the current time in a given timezone")]
+        public async Task TimenowTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder MinecraftTag(string query) {
-            return new DiscordEmbedBuilder()
+        [SlashCommand("minecraft", "find a Minecraft user")]
+        public async Task MinecraftTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(Config.UNIMPLEMENTED_ERROR)
                 .WithColor(new DiscordColor(Config.RED_COLOR))
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
 
-        public static DiscordEmbedBuilder EightballTag(string query) {
+        [SlashCommand("eightball", "get a snarky answer to a question")]
+        public async Task EightballTag(InteractionContext ctx, [Option("query", "What should I search for?")] string query) {
+            var response = new DiscordInteractionResponseBuilder();
             var message = Config.eightball[Config.random.Next(Config.eightball.Length)];
-            return new DiscordEmbedBuilder()
+            var embed = new DiscordEmbedBuilder()
                 .WithTitle(query)
                 .WithDescription(message)
                 .WithColor(new DiscordColor(Config.COLORLESS))
                 .WithImageUrl("https://thumbs.gfycat.com/QuestionableMajesticBillygoat-size_restricted.gif")
-                .WithFooter(Config.FOOTER);
+                .WithFooter(Config.FOOTER)
+                .Build();
+
+            response.AddEmbed(embed);
+            await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, response).ConfigureAwait(false); 
         }
     }
 }
